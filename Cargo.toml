@@ -1,0 +1,12 @@
+[package]
+name = "CommitmentKZG"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ark-ff = "*"
+ark-poly = "*"
+ark-bls12-381 = "*"
+ark-std = "*"
+ark-ec = "*"
+rand =  "*"
