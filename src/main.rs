@@ -22,6 +22,7 @@ fn setup_phase(max_degree: usize) -> PublicParams
     let mut powers_of_tau: Vec<G1Projective> = Vec::with_capacity(max_degree + 1);
     let mut current_power = Fr::ONE;
 
+    //Creating public marameters (g, g^tau, g^tau^2, ..., g^tau^k)
     for _ in 0..=max_degree {
         let point = g1 * current_power;
         powers_of_tau.push(point);
@@ -67,6 +68,7 @@ fn create_polynomial(max_degree: usize) -> DensePolynomial<Fr>
 fn commitment_phase(public_parameters: &Vec<G1Projective>, polynomial: &DensePolynomial<Fr>, max_degree: usize) -> G1Projective
 {
     let mut commitment = G1Projective::ZERO;
+    //Committing the polynomial (a1*pp1 + a2*pp2 ... + an*ppn)
     for i in 0..=max_degree {
         let scalar_mul = public_parameters[i] * polynomial.coeffs[i];
         commitment += scalar_mul;
@@ -76,9 +78,11 @@ fn commitment_phase(public_parameters: &Vec<G1Projective>, polynomial: &DensePol
 }
 
 fn prove_an_evaluation(public_parameters: &Vec<G1Projective>, polynomial: &DensePolynomial<Fr>, z: Fr) -> (Fr, G1Projective) {
+    //Evaluating P(z)
     let y = polynomial.evaluate(&z);
     println!("Evaluating polynomial at z = {:?}: P(z) = {:?}", z, y);
  
+    //Calculating Q(x) = (P(x)-y)/(x-z)
     let dividend = polynomial.clone() - DensePolynomial::from_coefficients_vec(vec![y]);
     let divisor = DensePolynomial::from_coefficients_vec(vec![-z, Fr::ONE]);
 
@@ -88,11 +92,10 @@ fn prove_an_evaluation(public_parameters: &Vec<G1Projective>, polynomial: &Dense
         return (y, G1Projective::ZERO);
     }
 
-    //Calculating Q(x)
     let qx = dividend / divisor;
     println!("Q(x): {:?}", qx);
 
-    //Committing proof
+    //Committing Q(x)
     let mut proof = G1Projective::ZERO;
     for i in 0..qx.coeffs.len() {
         let scalar_mul = public_parameters[i] * qx.coeffs[i];
@@ -112,6 +115,7 @@ fn verify_evaluation(commitment: G1Projective, proof: G1Projective, z: Fr, y: Fr
    let gy = G1Projective::generator() * y;
    let commitment_y = commitment - gy;
 
+   //Pairing e(π,[t−a]2​)=e(c−[b]1​,h)
    let pairing_1 = Bls12_381::pairing(proof, g2_tau_z);
    let pairing_2 = Bls12_381::pairing(commitment_y, g2);
 
@@ -121,10 +125,13 @@ fn verify_evaluation(commitment: G1Projective, proof: G1Projective, z: Fr, y: Fr
 fn main() {
     let mut rng = thread_rng();
 
+    //Ask for the max degree
     println!("Insert the max degree value for the polynomial:");
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
     let max_degree: usize = input.trim().parse().expect("Error, insert a numeric value \n");
+
+    //Check max degree
     if max_degree == 0 {
         panic!("The degree must be greater than 0.");
     }
@@ -132,15 +139,19 @@ fn main() {
         panic!("Degree too large to handle.");
     }
 
+    //Creating polynomial
     let polynomial = create_polynomial(max_degree);
+    //Setup phase
     let public_parameters = setup_phase(max_degree);
 
+    //Commitment phase
     let commitment = commitment_phase(&public_parameters.g1, &polynomial, max_degree);
 
+    //Prove an evaluation phase
     let z = Fr::rand(&mut rng);
-
     let (y, proof) = prove_an_evaluation(&public_parameters.g1, &polynomial, z);
 
+    //Verify evaluation phase
     let verification = verify_evaluation(commitment, proof, z, y, &public_parameters.g2);
 
     if verification
