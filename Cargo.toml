@@ -10,3 +10,10 @@ ark-bls12-381 = "*"
 ark-std = "*"
 ark-ec = "*"
 rand =  "*"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "benchmark"
+harness = false

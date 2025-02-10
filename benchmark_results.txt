@@ -1,0 +1,41 @@
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+setup_phase             time:   [86.798 ms 87.564 ms 88.469 ms]
+                        change: [-1.3352% +0.5436% +2.3557%] (p = 0.57 > 0.05)
+                        No change in performance detected.
+Found 10 outliers among 100 measurements (10.00%)
+  6 (6.00%) high mild
+  4 (4.00%) high severe
+
+create_polynomial       time:   [4.2367 µs 4.2551 µs 4.2795 µs]
+                        change: [-1.2742% -0.5875% -0.0188%] (p = 0.07 > 0.05)
+                        No change in performance detected.
+Found 8 outliers among 100 measurements (8.00%)
+  3 (3.00%) high mild
+  5 (5.00%) high severe
+
+commitment_phase        time:   [1.0370 ms 1.0426 ms 1.0501 ms]
+                        change: [+1.1665% +2.3310% +3.8222%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 7 outliers among 100 measurements (7.00%)
+  1 (1.00%) high mild
+  6 (6.00%) high severe
+
+prove_multi_evaluations time:   [47.851 ms 48.016 ms 48.273 ms]
+                        change: [-2.7882% -1.5888% -0.5985%] (p = 0.00 < 0.05)
+                        Change within noise threshold.
+Found 10 outliers among 100 measurements (10.00%)
+  2 (2.00%) high mild
+  8 (8.00%) high severe
+
+verify_multi_evaluations
+                        time:   [11.256 ms 11.305 ms 11.390 ms]
+                        change: [-0.9423% -0.2596% +0.6570%] (p = 0.55 > 0.05)
+                        No change in performance detected.
+Found 9 outliers among 100 measurements (9.00%)
+  4 (4.00%) high mild
+  5 (5.00%) high severe
+
